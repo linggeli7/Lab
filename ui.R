@@ -14,7 +14,7 @@ shinyUI(fluidPage(
   h4('Hypothetical drug'),
   p('Before simulating an experiment, we need to come up with a hypothetical drug. E0 is the
     number of cells we expect to see in a control well without any drug. IC50 is the median
-    effect concentration (an implicit assumption for simplicity is that the drug will kill
+    effect concentration (an implicit assumption is that the drug will kill
     all the cells at a very high concentraion). m the shape parameter usually ranges from 0
     to 2 with higher value making the curve more sigmoidal. The default plot is what we
     expect to observe as raw data. '),

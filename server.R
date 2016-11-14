@@ -103,10 +103,10 @@ shinyServer(function(input, output) {
       goodstuff
     })
     output$density <- renderPlot({
-      hat <- 0.5*(CI[ ,1]+CI[ ,2])
+      IC50_hat <- 0.5*(CI[ ,1]+CI[ ,2])
       cover <- CI[ ,1]<input$IC50 & CI[ ,2]>input$IC50
-      dens <- data.frame(hat, cover)
-      ggplot(dens, aes(hat, fill=cover)) + geom_dotplot(dotsize=0.4, stackdir="centerwhole")
+      dens <- data.frame(IC50_hat, cover)
+      ggplot(dens, aes(IC50_hat, fill=cover)) + geom_dotplot(dotsize=0.4, stackdir="centerwhole")
     })
   })
 })
