@@ -10,9 +10,9 @@ shinyUI(fluidPage(
     h4(em('Lingge Li')),
     h4(em('November 2016')),
     p(
-      'This web app is built for in vitro dose-response experiment simulation. In this setting,
+      'This web app is built for in vitro drug combination experiment simulation. In this setting,
       for a single drug, the dose-repsonse curve is usually modelled with a sigmoid function,
-      known as the Hill equation. It depends on two parameters, IC50 and m (shape) where IC50
+      known as the Emax equation. It depends on two parameters, IC50 and m (shape) where IC50
       is often the target of interest.'
     ),
     #########################################################################################
@@ -47,7 +47,7 @@ shinyUI(fluidPage(
           column(
             width = 4,
             numericInput("mA", label = "m (shape)", value = 1),
-            checkboxInput('fa', label = 'Hill curve', value =
+            checkboxInput('fa', label = 'Emax', value =
                             FALSE)
           ),
           column(width = 4,
@@ -56,12 +56,14 @@ shinyUI(fluidPage(
                  numericInput("mM", label = "m (shape)", value = 1))
         ),
         # Plots
-        fluidRow(plotOutput('distPlot')),
-        fluidRow(plotOutput("iso"))
+        fluidRow(
+          plotOutput('distPlot')),
+        fluidRow(
+          plotOutput("iso"))
         ),
       #########################################################################################
       tabPanel(
-        'Experimental design',
+        'Experimental Design',
         h4(''),
         p(
           'Here we focus on the simplest experiment where only one cell line is used on one plate.
@@ -90,7 +92,6 @@ shinyUI(fluidPage(
           column(width = 3,
                  actionButton('clear', label = 'Start over'))
         ),
-        p('Concentrations'),
         fluidRow(
           verbatimTextOutput('wells1'),
           verbatimTextOutput('wells2'),
@@ -122,32 +123,46 @@ shinyUI(fluidPage(
           actionButton('cook', label = 'Simulate'),
           offset = 5
         )),
-        fluidRow(plotOutput("sample"))
+        fluidRow(
+          plotOutput("sample"))
         ),
       #########################################################################################
       tabPanel(
-        'Data analysis',
+        'Data Analysis',
         h4(''),
         p(
           'The most popular data analysis method transforms the data to log scale and fits
-          a straight line. The output shown below includes the estimated parameter values and confidence intervals.
-          The R-squared value measures the goodness-of-fit and should be greater than 0.95.'
+          a straight line. The output shown below includes the estimated parameter values and confidence intervals.'
         ),
         fluidRow(column(
           width = 2,
-          actionButton('crunch', label = 'Fit data'),
+          actionButton('crunch', label = 'Fit models'),
           offset = 5
         )),
-        fluidRow(plotOutput("trans")),
+        fluidRow(
+          plotOutput("trans")),
         fluidRow(
           column(width = 4,
+                 strong('Fit A'),
                  verbatimTextOutput('conf1')),
           column(width = 4,
+                 strong('Fit B'),
                  verbatimTextOutput('conf2')),
           column(width = 4,
+                 strong('Fit M'),
                  verbatimTextOutput('conf3'))
         ),
-        fluidRow(verbatimTextOutput('index'))
+        fluidRow(
+          column(width = 4,
+                 strong('L20'),
+                 verbatimTextOutput('index1')),
+          column(width = 4,
+                 strong('L50'),
+                 verbatimTextOutput('index2')),
+          column(width = 4,
+                 strong('L80'),
+                 verbatimTextOutput('index3'))
+        )
         #h4('Asymptotic performance'),
         #p(
         #'We can perform hundreds of simulations to assess confidence interval coverage and
