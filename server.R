@@ -83,7 +83,8 @@ shinyServer(function(input, output) {
         xlab = 'Concentration',
         ylab = 'Fraction affected',
         ylim = c(0, 1)
-      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug A')
+      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug A') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     } else {
       p1 <- qplot(
         X1,
@@ -94,7 +95,8 @@ shinyServer(function(input, output) {
         xlab = 'Concentration',
         ylab = 'Cell count',
         ylim = c(0, 100)
-      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug A')
+      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug A') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     }
     
     X2 <- seq(0, highest * 4, 1)
@@ -109,7 +111,8 @@ shinyServer(function(input, output) {
         xlab = 'Concentration',
         ylab = 'Fraction affected',
         ylim = c(0, 1)
-      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug B')
+      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug B') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     } else {
       p2 <- qplot(
         X2,
@@ -120,7 +123,8 @@ shinyServer(function(input, output) {
         xlab = 'Concentration',
         ylab = 'Cell count',
         ylim = c(0, 100)
-      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug B')
+      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug B') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     }
     
     X3 <- seq(0, highest * 4, 1)
@@ -135,7 +139,8 @@ shinyServer(function(input, output) {
         xlab = 'Concentration',
         ylab = 'Fraction affected',
         ylim = c(0, 1)
-      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug M')
+      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug M') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     } else {
       p3 <- qplot(
         X3,
@@ -146,7 +151,8 @@ shinyServer(function(input, output) {
         xlab = 'Concentration',
         ylab = 'Cell count',
         ylim = c(0, 100)
-      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug M')
+      ) + theme(aspect.ratio = 1) + ggtitle(label='Drug M') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     }
     
     grid.arrange(p1, p2, p3, ncol = 3, 
@@ -180,7 +186,8 @@ shinyServer(function(input, output) {
         fill = 'red',
         alpha = 0.2
       ) +
-      theme(aspect.ratio = 1) + ggtitle('20% effect')
+      theme(aspect.ratio = 1) + ggtitle('20% effect') +
+      theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     
     IC_A2 <- IC(0.5, input$IC50A, input$mA)
     IC_B2 <- IC(0.5, input$IC50B, input$mB)
@@ -208,7 +215,8 @@ shinyServer(function(input, output) {
         fill = 'red',
         alpha = 0.2
       ) +
-      theme(aspect.ratio = 1) + ggtitle('50% effect')
+      theme(aspect.ratio = 1) + ggtitle('50% effect') +
+      theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     
     IC_A3 <- IC(0.8, input$IC50A, input$mA)
     IC_B3 <- IC(0.8, input$IC50B, input$mB)
@@ -236,7 +244,8 @@ shinyServer(function(input, output) {
         fill = 'red',
         alpha = 0.2
       ) +
-      theme(aspect.ratio = 1) + ggtitle('80% effect')
+      theme(aspect.ratio = 1) + ggtitle('80% effect') +
+      theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
     
     grid.arrange(p1, p2, p3, ncol = 3,
                  bottom=textGrob('Isobolograms', gp=gpar(fontsize=16, fontface=2)))
@@ -249,10 +258,13 @@ shinyServer(function(input, output) {
       X3 = c(),
       Y1 = c(),
       Y2 = c(),
-      Y3 = c()
+      Y3 = c(),
+      table = c()
     )
   
   observeEvent(input$add, {
+    dat$table <- rbind(dat$table, c(input$drug, input$conc, input$k))
+    print(dat$table)
     if (input$drug == 'A') {
       current <- dat$X1
       dat$X1 <- c(current, rep(input$conc, input$k))
@@ -273,11 +285,13 @@ shinyServer(function(input, output) {
     dat$X3 <- c()
   })
   
-  output$wells1 <- renderText(dat$X1)
-  
-  output$wells2 <- renderText(dat$X2)
-  
-  output$wells3 <- renderText(dat$X3)
+  output$wells <- DT::renderDataTable({
+    mydata <- as.data.frame(dat$table)
+    if (dim(mydata)[1] > 0) {
+      colnames(mydata) <- c('Drug', 'Conc', 'Rep')
+      DT::datatable(mydata, options=list(class='compact', paging=FALSE, searching=FALSE))
+    }
+  })
   
   observeEvent(input$cook, {
     X1 <- dat$X1
@@ -296,13 +310,16 @@ shinyServer(function(input, output) {
     output$sample <- renderPlot({
       p1 <-
         qplot(X1, Y1, xlab = 'Concentration', ylab = 'Observed cell count', ylim=c(0, 120)) + 
-        theme(aspect.ratio = 1) + ggtitle(label='Drug A')
+        theme(aspect.ratio = 1) + ggtitle(label='Drug A') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
       p2 <-
         qplot(X2, Y2, xlab = 'Concentration', ylab = 'Observed cell count', ylim=c(0, 120)) + 
-        theme(aspect.ratio = 1) + ggtitle(label='Drug B')
+        theme(aspect.ratio = 1) + ggtitle(label='Drug B') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
       p3 <-
         qplot(X3, Y3, xlab = 'Concentration', ylab = 'Observed cell count', ylim=c(0, 120)) + 
-        theme(aspect.ratio = 1) + ggtitle(label='Drug M')
+        theme(aspect.ratio = 1) + ggtitle(label='Drug M') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
       
       grid.arrange(p1, p2, p3, ncol=3,
                    bottom=textGrob('Simulated data', gp=gpar(fontsize=16, fontface=2)))
@@ -341,13 +358,16 @@ shinyServer(function(input, output) {
     output$trans <- renderPlot({
       p1 <-
         qplot(log(Xt1), log(Yt1), xlab = 'log(Concentration)', ylab = 'Fa/(1-Fa)') +
-        geom_smooth(method = 'lm') + theme(aspect.ratio = 1) + ggtitle(label='Drug A')
+        geom_smooth(method = 'lm') + theme(aspect.ratio = 1) + ggtitle(label='Drug A') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
       p2 <-
         qplot(log(Xt2), log(Yt2), xlab = 'log(Concentration)', ylab = 'Fa/(1-Fa)') +
-        geom_smooth(method = 'lm') + theme(aspect.ratio = 1) + ggtitle(label='Drug B')
+        geom_smooth(method = 'lm') + theme(aspect.ratio = 1) + ggtitle(label='Drug B') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
       p3 <-
         qplot(log(Xt3), log(Yt3), xlab = 'log(Concentration)', ylab = 'Fa/(1-Fa)') +
-        geom_smooth(method = 'lm') + theme(aspect.ratio = 1) + ggtitle(label='Drug M')
+        geom_smooth(method = 'lm') + theme(aspect.ratio = 1) + ggtitle(label='Drug M') +
+        theme(plot.title = element_text(hjust = 0.5, face = 'bold'))
       
       grid.arrange(p1, p2, p3, ncol = 3,
                    bottom=textGrob('Transformed data', gp=gpar(fontsize=16, fontface=2)))

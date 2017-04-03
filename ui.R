@@ -80,7 +80,7 @@ shinyUI(fluidPage(
                  )),
           column(
             width = 4,
-            numericInput("conc", label = "Drug concentration", value = 0)
+            numericInput("conc", label = "Concentration", value = 0)
           ),
           column(width = 4,
                  numericInput("k", label = "# of replicates", value = 4)),
@@ -93,9 +93,11 @@ shinyUI(fluidPage(
                  actionButton('clear', label = 'Start over'))
         ),
         fluidRow(
-          verbatimTextOutput('wells1'),
-          verbatimTextOutput('wells2'),
-          verbatimTextOutput('wells3')
+          column(
+            width = 6,
+            DT::dataTableOutput('wells'),
+            offset = 3
+          )
         ),
         p(
           'The noise is generated with',
@@ -143,13 +145,13 @@ shinyUI(fluidPage(
           plotOutput("trans")),
         fluidRow(
           column(width = 4,
-                 strong('Fit A'),
+                 strong('Model A'),
                  verbatimTextOutput('conf1')),
           column(width = 4,
-                 strong('Fit B'),
+                 strong('Model B'),
                  verbatimTextOutput('conf2')),
           column(width = 4,
-                 strong('Fit M'),
+                 strong('Model M'),
                  verbatimTextOutput('conf3'))
         ),
         fluidRow(
